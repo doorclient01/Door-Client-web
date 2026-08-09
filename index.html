@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Door Client — A Lightweight, FPS-Focused Minecraft Launcher</title>
+<meta name="description" content="Door Client is a lightweight, FPS-focused Minecraft launcher with one-click mod install, custom HUD & cosmetics, and auto updates. Free download for Windows.">
+<meta name="keywords" content="Door Client, Minecraft launcher, Minecraft client, FPS boost Minecraft, Minecraft mods, Minecraft HUD">
+<meta name="robots" content="index, follow">
+<meta name="google-site-verification" content="S_EFmTE7LDaFnD7_Dz2fNGBc0z0XMJUrFDNxh8AhexY" />
+<link rel="canonical" href="https://doorclient01.github.io/Door-client-website/">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Door Client">
+<meta property="og:title" content="Door Client — A Lightweight, FPS-Focused Minecraft Launcher">
+<meta property="og:description" content="One-click mod install, custom HUD & cosmetics, smoother FPS. Free download for Windows.">
+<meta property="og:image" content="https://doorclient01.github.io/Door-client-website/logo.png">
+<meta property="og:url" content="https://doorclient01.github.io/Door-client-website/">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Door Client — A Lightweight, FPS-Focused Minecraft Launcher">
+<meta name="twitter:description" content="One-click mod install, custom HUD & cosmetics, smoother FPS. Free download for Windows.">
+<meta name="twitter:image" content="https://doorclient01.github.io/Door-client-website/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a060e;
+    --bg-2: #120a1a;
+    --deep: #2b0f3d;
+    --violet: #7c3aed;
+    --violet-2: #a855f7;
+    --lilac: #e4c9ff;
+    --lilac-soft: #cbb0e8;
+    --ink: #f5f0fa;
+    --ink-dim: #b9aecb;
+    --line: rgba(228,201,255,0.14);
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Manrope', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; background: var(--bg); }
+
+  body{
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--body);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  ::selection{ background: var(--violet); color:#fff; }
+
+  :focus-visible{
+    outline: 2px solid var(--lilac);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    backdrop-filter: blur(14px);
+    background: rgba(10,6,14,0.6);
+    border-bottom: 1px solid var(--line);
+  }
+  nav{
+    max-width:1180px; margin:0 auto; padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand img{ width:34px; height:34px; border-radius:8px; display:block; }
+  .brand span{
+    font-family:var(--display); font-weight:700; font-size:1.15rem;
+    letter-spacing:0.01em;
+  }
+  .navlinks{ display:flex; gap:36px; align-items:center; }
+  .navlinks a{
+    font-size:0.92rem; color:var(--ink-dim); font-weight:600;
+    transition:color .2s ease;
+  }
+  .navlinks a:hover{ color:var(--lilac); }
+  .nav-cta{
+    background: linear-gradient(135deg, var(--violet-2), var(--violet));
+    color:#fff !important; padding:9px 20px; border-radius:8px;
+    font-weight:700; font-size:0.88rem;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset, 0 8px 24px -8px rgba(124,58,237,0.7);
+  }
+  .navtoggle{ display:none; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center;
+    padding: 140px 0 80px;
+    overflow:hidden;
+    background:
+      radial-gradient(60% 55% at 50% 18%, rgba(124,58,237,0.35), transparent 65%),
+      radial-gradient(90% 60% at 50% 100%, rgba(43,15,61,0.55), transparent 60%);
+  }
+
+  #tubes-canvas{
+    position:fixed; inset:0;
+    width:100vw; height:100vh;
+    display:block; touch-action:none; cursor:pointer;
+    z-index:-1;
+  }
+  .tubes-loading{
+    position:absolute; inset:0; z-index:1;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-dim); font-family:var(--mono); font-size:0.8rem; letter-spacing:0.05em;
+    transition:opacity .4s ease;
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #tubes-canvas{ display:none; }
+  }
+
+  .hero-inner{
+    position:relative; z-index:2;
+    max-width:760px; margin:0 auto;
+    text-align:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:0.78rem; letter-spacing:0.08em;
+    color:var(--lilac-soft); text-transform:uppercase;
+    border:1px solid var(--line); padding:6px 14px; border-radius:999px;
+    background: rgba(124,58,237,0.08);
+    margin-bottom:28px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--violet-2);
+    box-shadow:0 0 10px 2px var(--violet-2);
+  }
+
+  h1.hero-title{
+    font-family:var(--display); font-weight:700;
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    line-height:1.04; letter-spacing:-0.02em;
+    margin-bottom:22px;
+  }
+  h1.hero-title .accent{
+    background: linear-gradient(120deg, var(--lilac) 10%, var(--violet-2) 55%, var(--violet) 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .hero p.sub{
+    font-size:1.08rem; color:var(--ink-dim); line-height:1.65;
+    max-width:520px; margin:0 auto 38px;
+  }
+
+  .hero-ctas{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+  @property --gradient-angle{
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes border-spin{
+    from{ --gradient-angle: 0deg; }
+    to{ --gradient-angle: 360deg; }
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 26px; border-radius:10px;
+    font-weight:700; font-size:0.96rem;
+    transition: transform .18s ease, box-shadow .18s ease, background .2s ease;
+    border:1px solid transparent;
+  }
+  .btn-primary{
+    position:relative; isolation:isolate; overflow:hidden;
+    background: linear-gradient(135deg, var(--violet-2), var(--violet));
+    color:#fff;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset, 0 14px 34px -12px rgba(124,58,237,0.85);
+  }
+  .btn-primary::before{
+    content:''; position:absolute; inset:-2px; z-index:-2; border-radius:inherit;
+    background: conic-gradient(from var(--gradient-angle), transparent 0%, var(--lilac) 40%, var(--violet-2) 50%, transparent 60%, transparent 100%);
+    animation: border-spin 2.2s linear infinite;
+  }
+  .btn-primary::after{
+    content:''; position:absolute; inset:1px; z-index:-1; border-radius:9px;
+    background: linear-gradient(135deg, var(--violet-2), var(--violet));
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 0 0 1px rgba(255,255,255,0.1) inset, 0 18px 40px -10px rgba(168,85,247,0.9); }
+  @media (prefers-reduced-motion: reduce){
+    .btn-primary::before{ animation:none; }
+  }
+  .btn-ghost{
+    background: rgba(228,201,255,0.05);
+    border-color: var(--line);
+    color: var(--lilac);
+  }
+  .btn-ghost:hover{ background: rgba(228,201,255,0.1); transform:translateY(-2px); }
+
+  .hero-stats{
+    margin-top:64px; display:flex; justify-content:center; gap:56px;
+    flex-wrap:wrap;
+  }
+  .stat{ text-align:center; }
+  .stat b{
+    display:block; font-family:var(--mono); font-size:1.5rem;
+    color:var(--lilac); font-weight:500;
+  }
+  .stat span{ font-size:0.8rem; color:var(--ink-dim); letter-spacing:0.03em; }
+
+  /* ---------- Section shell ---------- */
+  section{ position:relative; padding:120px 0; }
+  .section-head{ max-width:640px; margin-bottom:64px; }
+  .section-head .k{
+    font-family:var(--mono); font-size:0.78rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--violet-2); margin-bottom:14px; display:block;
+  }
+  .section-head h2{
+    font-family:var(--display); font-weight:700;
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem); line-height:1.15; letter-spacing:-0.01em;
+    margin-bottom:16px;
+  }
+  .section-head p{ color:var(--ink-dim); font-size:1.02rem; line-height:1.6; }
+
+  /* arc divider — echoes the ring in the mark */
+  .divider{
+    height:120px; position:relative; margin-top:-1px;
+  }
+  .divider svg{ width:100%; height:100%; display:block; }
+
+  /* ---------- Features ---------- */
+  .features{ background: rgba(18,10,26,0.82); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .feature-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+    background: var(--line);
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+  }
+  .feature{
+    background: var(--bg-2);
+    padding:34px 30px;
+    transition: background .25s ease;
+  }
+  .feature:hover{ background: rgba(124,58,237,0.08); }
+  .feature .num{
+    font-family:var(--mono); color:var(--violet-2); font-size:0.8rem; margin-bottom:22px; display:block;
+  }
+  .feature-icon{
+    width:42px; height:42px; margin-bottom:20px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .feature h3{
+    font-family:var(--display); font-size:1.15rem; font-weight:600; margin-bottom:10px;
+  }
+  .feature p{ color:var(--ink-dim); font-size:0.92rem; line-height:1.6; }
+
+  /* ---------- MagicBento hover effects (feature cards) ---------- */
+  .feature{ position:relative; overflow:hidden; will-change:transform; }
+  .feature .spotlight-overlay{
+    position:absolute; inset:0; pointer-events:none; z-index:1;
+    background: radial-gradient(var(--spotlight-radius,260px) circle at var(--mouse-x,50%) var(--mouse-y,50%), var(--glow-color, rgba(168,85,247,0.15)), transparent 80%);
+    opacity:0; transition:opacity .3s ease;
+  }
+  .feature:hover .spotlight-overlay{ opacity:1; }
+  .feature .border-glow{
+    position:absolute; inset:0; pointer-events:none; z-index:1; border-radius:inherit; padding:1px;
+    background: radial-gradient(220px circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(168,85,247,0.85), transparent 40%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity:0; transition:opacity .3s ease;
+  }
+  .feature:hover .border-glow{ opacity:1; }
+  .feature .mb-particle{
+    position:absolute; width:4px; height:4px; border-radius:50%; z-index:2;
+    background: rgba(168,85,247,1); box-shadow:0 0 6px rgba(168,85,247,.65);
+    pointer-events:none;
+  }
+  .feature > *:not(.spotlight-overlay):not(.border-glow):not(.mb-particle){ position:relative; z-index:3; }
+  @media (prefers-reduced-motion: reduce), (max-width: 860px){
+    .feature .spotlight-overlay, .feature .border-glow{ display:none !important; }
+  }
+
+  /* ---------- Connect (hub-and-spoke scroll) ---------- */
+  .connect-section{ background:rgba(10,6,14,0.75); }
+  .connect-sticky-wrap{
+    height:220vh; /* scroll room that drives the animation */
+    position:relative;
+  }
+  .connect-stage{
+    position:sticky; top:0;
+    height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  #connect-lines{
+    position:absolute; inset:0; width:100%; height:100%;
+    pointer-events:none;
+  }
+  #connect-lines path{
+    fill:none; stroke:var(--violet-2); stroke-width:1.6;
+    filter: drop-shadow(0 0 5px rgba(168,85,247,0.55));
+  }
+  .connect-node{
+    position:absolute; top:50%; left:50%;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background: rgba(228,201,255,0.05);
+    transition: opacity .1s linear, border-color .2s ease, box-shadow .2s ease;
+    will-change: transform;
+  }
+  .connect-center{
+    width:74px; height:74px;
+    transform: translate(-50%,-50%) scale(1);
+    border-color: rgba(168,85,247,0.5);
+    box-shadow: 0 0 40px -6px rgba(168,85,247,0.6);
+    z-index:2;
+    overflow:hidden;
+  }
+  .connect-center img{ width:100%; height:100%; object-fit:cover; }
+  .connect-orbit{
+    width:104px; height:104px;
+    opacity:0; z-index:1;
+    background: linear-gradient(160deg, rgba(124,58,237,0.28), rgba(168,85,247,0.08));
+    border-color: rgba(168,85,247,0.4);
+    box-shadow: 0 10px 26px -12px rgba(124,58,237,0.7), inset 0 0 0 1px rgba(228,201,255,0.06);
+    /* JS sets --x/--y (final orbit offset) and animates translate via inline transform */
+  }
+  .connect-label{
+    font-family:var(--display); font-weight:700; font-size:0.82rem; color:var(--lilac);
+    text-align:center; padding:0 10px;
+  }
+  .connect-orbit.is-connected{
+    border-color: rgba(168,85,247,0.75);
+    background: linear-gradient(160deg, rgba(124,58,237,0.4), rgba(168,85,247,0.14));
+    box-shadow: 0 0 30px -6px rgba(168,85,247,0.75), inset 0 0 0 1px rgba(228,201,255,0.1);
+  }
+  #connect-lines path{
+    opacity:0;
+    transition: opacity .2s ease;
+  }
+  @media (max-width: 860px){
+    .connect-sticky-wrap{ height:auto; }
+    .connect-stage{ position:relative; height:auto; min-height:60vh; padding:60px 0; }
+    .connect-orbit{ opacity:1 !important; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .connect-sticky-wrap{ height:auto; }
+    .connect-stage{ position:relative; height:auto; min-height:60vh; padding:60px 0; }
+    .connect-orbit{ opacity:1 !important; }
+    #connect-lines path{ stroke-dashoffset:0 !important; }
+  }
+
+  /* ---------- Showcase: stacking cards ---------- */
+  .card-stack{ position:relative; }
+  .stack-item{
+    height:100vh;
+    display:flex; align-items:flex-start; justify-content:center;
+  }
+  .stack-card{
+    position:sticky;
+    top:110px;
+    width:100%;
+    height:60vh;
+    min-height:340px;
+    max-height:520px;
+    border-radius:20px; overflow:hidden;
+    border:1px solid var(--line);
+    background: linear-gradient(160deg, rgba(124,58,237,0.2), rgba(10,6,14,0.55)), var(--bg);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stack-card .glyph{ opacity:0.5; width:18%; }
+  .stack-card .tag{
+    position:absolute; bottom:20px; left:20px;
+    font-family:var(--mono); font-size:0.78rem; color:var(--lilac-soft);
+    background:rgba(10,6,14,0.65); border:1px solid var(--line);
+    padding:6px 12px; border-radius:6px;
+  }
+  @media (max-width: 860px){
+    .stack-item{ height:70vh; }
+    .stack-card{ top:90px; height:46vh; min-height:260px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .stack-item{ height:auto; margin-bottom:20px; }
+    .stack-card{ position:relative; top:0; }
+  }
+
+  /* ---------- Download ---------- */
+  /* ---------- Creators ---------- */
+  .creators{
+    background: rgba(10,6,14,0.75);
+    padding: 90px 0 110px;
+  }
+  .creator-grid{
+    display:flex; justify-content:center; gap:56px; flex-wrap:wrap;
+  }
+  .creator-card{
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+  }
+  .creator-avatar{
+    width:96px; height:96px; border-radius:16px;
+    border:1px solid var(--line);
+    image-rendering:pixelated;
+    background: rgba(228,201,255,0.04);
+    box-shadow: 0 14px 34px -14px rgba(124,58,237,0.6);
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .creator-card:hover .creator-avatar{ transform: translateY(-4px); border-color: var(--violet-2); }
+  .creator-name{
+    font-family:var(--display); font-weight:600; font-size:1rem; color:var(--lilac);
+  }
+  .creator-subscribe{
+    font-family:var(--mono); font-size:0.72rem; letter-spacing:0.06em;
+    text-transform:uppercase; color: var(--ink-dim);
+    transition: color .2s ease;
+  }
+  .creator-card:hover .creator-subscribe{ color: var(--violet-2); }
+
+  .download{
+    background:
+      radial-gradient(70% 100% at 50% 100%, rgba(124,58,237,0.28), transparent 60%),
+      rgba(10,6,14,0.75);
+    text-align:center;
+  }
+  .download .section-head{ margin:0 auto 48px; text-align:center; }
+  .platforms{
+    display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-bottom:30px;
+  }
+  .platform{
+    display:flex; align-items:center; gap:12px;
+    padding:16px 26px; border-radius:12px;
+    border:1px solid var(--line);
+    background: rgba(228,201,255,0.04);
+    min-width:190px; text-align:left;
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+  .platform:hover{ border-color: var(--violet-2); transform:translateY(-3px); background: rgba(124,58,237,0.1); }
+  .platform .pname{ font-weight:700; font-size:0.95rem; }
+  .platform .pmeta{ font-family:var(--mono); font-size:0.72rem; color:var(--ink-dim); }
+
+  .version-note{ font-family:var(--mono); font-size:0.8rem; color:var(--ink-dim); }
+  .version-note b{ color:var(--lilac); }
+
+  .lab-cta{
+    display:inline-flex; align-items:center; gap:10px;
+    margin-top:28px;
+    padding:13px 24px; border-radius:10px;
+    font-weight:700; font-size:0.92rem;
+    color:#eafffb;
+    border:1px solid rgba(45,212,191,0.35);
+    background: linear-gradient(135deg, rgba(45,212,191,0.16), rgba(56,189,248,0.10));
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset, 0 12px 28px -14px rgba(45,212,191,0.55);
+    transition: transform .18s ease, border-color .18s ease, background .2s ease;
+  }
+  .lab-cta:hover{
+    transform: translateY(-2px);
+    border-color: rgba(45,212,191,0.6);
+    background: linear-gradient(135deg, rgba(45,212,191,0.24), rgba(56,189,248,0.16));
+  }
+  .lab-cta .lab-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:#2dd4bf; box-shadow:0 0 10px 2px rgba(45,212,191,0.7);
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:48px 0 36px;
+  }
+  .foot-row{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:24px;
+  }
+  .foot-brand{ display:flex; align-items:center; gap:10px; }
+  .foot-brand img{ width:26px; height:26px; border-radius:6px; }
+  .foot-brand span{ font-family:var(--display); font-weight:700; }
+  .foot-links{ display:flex; gap:28px; flex-wrap:wrap; }
+  .foot-links a{ font-size:0.86rem; color:var(--ink-dim); transition:color .2s ease; }
+  .foot-links a:hover{ color:var(--lilac); }
+  .foot-legal{
+    margin-top:28px; font-size:0.78rem; color:#6f6480;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  /* ---------- FAQ Chat Widget ---------- */
+  .faq-launcher{
+    position:fixed; right:22px; bottom:22px; z-index:210;
+    width:56px; height:56px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background: transparent;
+    border:none;
+    cursor:pointer; transition: transform .2s ease, filter .2s ease;
+    filter: drop-shadow(0 10px 22px rgba(20,10,35,0.55));
+  }
+  .faq-launcher:hover{ transform:translateY(-3px); filter: drop-shadow(0 14px 28px rgba(20,10,35,0.6)); }
+  .faq-launcher svg{ width:24px; height:24px; }
+  .faq-launcher .faq-icon-chat{ width:44px; height:44px; display:block; }
+  .faq-launcher .faq-icon-close{ display:none; }
+  .faq-launcher.open .faq-icon-chat{ display:none; }
+  .faq-launcher.open .faq-icon-close{ display:block; }
+  .faq-launcher.open{ background:rgba(18,10,26,0.9); border:1px solid var(--line); backdrop-filter:blur(8px); }
+  .faq-dot{
+    position:absolute; top:2px; right:2px; width:12px; height:12px; border-radius:50%;
+    background:#4ade80; border:2px solid var(--bg);
+  }
+  .faq-eye{ transition: transform .05s linear; }
+
+  .faq-panel{
+    position:fixed; right:22px; bottom:90px; z-index:210;
+    width:340px; max-width:calc(100vw - 44px);
+    height:460px; max-height:calc(100vh - 130px);
+    display:flex; flex-direction:column;
+    border-radius:18px; overflow:hidden;
+    border:1px solid var(--line);
+    background: rgba(18,10,26,0.97);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.65), 0 0 0 1px rgba(168,85,247,0.15);
+    opacity:0; transform: translateY(16px) scale(0.98);
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .faq-panel.open{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+
+  .faq-head{
+    display:flex; align-items:center; gap:10px;
+    padding:16px 18px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(43,15,61,0.6));
+    border-bottom:1px solid var(--line);
+  }
+  .faq-head img{ width:30px; height:30px; border-radius:8px; }
+  .faq-avatar{
+    width:50px; height:50px; flex-shrink:0;
+    animation: nova-float 3.6s ease-in-out infinite;
+  }
+  @keyframes nova-float{
+    0%, 100%{ transform: translateY(0); }
+    50%{ transform: translateY(-3px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .faq-avatar{ animation:none; }
+  }
+  .faq-head .t{ font-family:var(--display); font-weight:700; font-size:0.95rem; }
+  .faq-head .s{ font-size:0.72rem; color:var(--ink-dim); display:flex; align-items:center; gap:5px; }
+  .faq-head .s .live{ width:6px; height:6px; border-radius:50%; background:#4ade80; box-shadow:0 0 6px 1px #4ade80; }
+
+  .faq-body{
+    flex:1; overflow-y:auto; padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+    scrollbar-width:thin; scrollbar-color: rgba(168,85,247,0.4) transparent;
+  }
+  .faq-body::-webkit-scrollbar{ width:6px; }
+  .faq-body::-webkit-scrollbar-thumb{ background:rgba(168,85,247,0.35); border-radius:6px; }
+
+  .faq-msg{ max-width:85%; font-size:0.86rem; line-height:1.5; padding:10px 13px; border-radius:12px; }
+  .faq-msg.bot{
+    align-self:flex-start; background: rgba(228,201,255,0.07); border:1px solid var(--line);
+    border-bottom-left-radius:4px; color:var(--ink);
+  }
+  .faq-msg.user{
+    align-self:flex-end;
+    background: linear-gradient(135deg, var(--violet-2), var(--violet));
+    color:#fff; border-bottom-right-radius:4px;
+  }
+
+  .faq-typing{ display:flex; align-items:center; gap:4px; padding:13px 15px; }
+  .faq-typing span{
+    width:6px; height:6px; border-radius:50%; background:var(--lilac-soft);
+    animation: faq-typing-bounce 1.1s ease-in-out infinite;
+  }
+  .faq-typing span:nth-child(2){ animation-delay:0.15s; }
+  .faq-typing span:nth-child(3){ animation-delay:0.3s; }
+  @keyframes faq-typing-bounce{
+    0%, 60%, 100%{ transform:translateY(0); opacity:0.5; }
+    30%{ transform:translateY(-4px); opacity:1; }
+  }
+  .faq-inputrow button:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .faq-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .faq-chip{
+    font-family:var(--body); font-size:0.75rem; font-weight:600;
+    padding:6px 11px; border-radius:999px;
+    border:1px solid var(--line); background:rgba(228,201,255,0.05); color:var(--lilac-soft);
+    cursor:pointer; transition: background .15s ease, border-color .15s ease;
+  }
+  .faq-chip:hover{ background:rgba(124,58,237,0.18); border-color:var(--violet-2); color:var(--lilac); }
+
+  .faq-inputrow{
+    display:flex; gap:8px; padding:12px; border-top:1px solid var(--line);
+    background: rgba(10,6,14,0.4);
+  }
+  .nova-input-wrap{
+    position:relative; flex:1; border-radius:999px;
+    background: rgba(228,201,255,0.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    transition: box-shadow .2s ease;
+  }
+  .nova-input-wrap:focus-within{
+    box-shadow: 0 2px 14px rgba(124,58,237,0.28);
+  }
+  .nova-input-border{
+    position:absolute; inset:0; z-index:0; border-radius:inherit;
+    padding:2px;
+    background: conic-gradient(from var(--gradient-angle), #ff5f7e, #ffd166, #4ee1a0, #4cc9f0, #a855f7, #ff5f7e);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: border-spin 3s linear infinite;
+    pointer-events:none;
+  }
+  .nova-input-inner{
+    position:relative; z-index:1;
+    display:flex; align-items:center; border-radius:inherit;
+  }
+  .nova-input-icon{
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    width:32px; height:100%; padding-left:12px; color:var(--ink-dim);
+  }
+  .nova-input-icon svg{ width:15px; height:15px; }
+  .faq-inputrow input{
+    width:100%; border:none; background:transparent;
+    color:var(--ink); border-radius:999px; padding:10px 14px 10px 6px; font-size:0.85rem; font-family:var(--body);
+  }
+  .faq-inputrow input::placeholder{ color:var(--ink-dim); }
+  .faq-inputrow input:focus{ outline:none; }
+  .faq-inputrow button{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--violet-2), var(--violet));
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition: transform .15s ease;
+  }
+  .faq-inputrow button:hover{ transform:translateY(-1px); }
+  .faq-inputrow button svg{ width:16px; height:16px; }
+
+  @media (max-width:480px){
+    .faq-panel{ right:12px; left:12px; width:auto; bottom:82px; }
+    .faq-launcher{ right:16px; bottom:16px; }
+  }
+
+  /* ---------- Magnification Dock ---------- */
+  .mac-dock{
+    position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+    z-index:200;
+    display:flex; align-items:flex-end; gap:14px;
+    padding:10px 16px 8px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background: rgba(18,10,26,0.65);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px -14px rgba(0,0,0,0.6);
+  }
+  .dock-item{
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    width:42px; height:42px;
+    border-radius:50%;
+    background: rgba(228,201,255,0.06);
+    border:1px solid var(--line);
+    color: var(--lilac);
+    transition: width .18s cubic-bezier(.34,1.56,.64,1), height .18s cubic-bezier(.34,1.56,.64,1),
+                transform .18s cubic-bezier(.34,1.56,.64,1), background .2s ease;
+    will-change: width, height, transform;
+    flex-shrink:0;
+  }
+  .dock-item svg{ width:52%; height:52%; }
+  .dock-item:hover{ background: rgba(168,85,247,0.18); }
+  .dock-tooltip{
+    position:absolute; bottom:100%; left:50%; transform:translateX(-50%) translateY(-8px);
+    margin-bottom:4px;
+    font-family:var(--mono); font-size:0.7rem; white-space:nowrap;
+    background:rgba(10,6,14,0.9); border:1px solid var(--line); color:var(--lilac);
+    padding:4px 9px; border-radius:6px;
+    opacity:0; pointer-events:none;
+    transition: opacity .15s ease, transform .15s ease;
+  }
+  .dock-item:hover .dock-tooltip{ opacity:1; transform:translateX(-50%) translateY(-2px); }
+  @media (max-width: 860px){
+    .mac-dock{ display:none; } /* magnification needs precise mouse position — not meaningful on touch */
+  }
+  @media (prefers-reduced-motion: reduce){
+    .dock-item{ transition:background .2s ease; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 860px){
+    .navlinks{ display:none; }
+    .feature-grid{ grid-template-columns:1fr; }
+    .hero-stats{ gap:36px; }
+    section{ padding:80px 0; }
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Door Client",
+  "operatingSystem": "Windows",
+  "applicationCategory": "GameApplication",
+  "description": "Door Client is a lightweight, FPS-focused Minecraft launcher with one-click mod install, custom HUD & cosmetics, and auto updates.",
+  "url": "https://doorclient01.github.io/Door-client-website/",
+  "image": "https://doorclient01.github.io/Door-client-website/logo.png",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Door Client",
+  "url": "https://doorclient01.github.io/Door-client-website/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Door Client",
+    "url": "https://doorclient01.github.io/Door-client-website/",
+    "logo": "https://doorclient01.github.io/Door-client-website/logo.png"
+  }
+}
+</script>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand">
+      <img src="logo.png" alt="Door Client logo">
+      <span>Door Client</span>
+    </div>
+    <div class="navlinks">
+      <a href="#features">Features</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#download">Download</a>
+      <a href="#" class="nav-cta">Get started</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <canvas id="tubes-canvas"></canvas>
+    <div class="tubes-loading" id="tubes-loading">Loading…</div>
+
+    <div class="wrap hero-inner">
+      <span class="eyebrow"><span class="dot"></span> Now open for early access</span>
+      <h1 class="hero-title">A different <span class="accent">door</span> into Minecraft.</h1>
+      <p class="sub">Door Client is a lightweight launcher and client built for players who want more control — smoother performance, deeper customization, and a cleaner way to play.</p>
+      <div class="hero-ctas">
+        <a href="https://github.com/doorclient01/Door-client-website/releases/download/v1.0/DoorClient-1.0.0.1.exe" class="btn btn-primary">Download Door Client</a>
+        <a href="#features" class="btn btn-ghost">See what's inside</a>
+      </div>
+      <div style="text-align:center; margin-top:18px;">
+        <a href="cosmetic-lab.html" class="lab-cta">
+          <span class="lab-dot" aria-hidden="true"></span>
+          Open Cosmetic Lab
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>1-click</b><span>mod install</span></div>
+        <div class="stat"><b>+40%</b><span>avg. FPS gain</span></div>
+        <div class="stat"><b>Windows</b><span>supported</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="k">What's inside</span>
+        <h2>Everything you need, nothing you don't.</h2>
+        <p>Door Client wraps the parts of the modded experience that actually matter into one clean launcher — so setup takes seconds, not evenings.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature">
+          <span class="num">01</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M21 4L36 12.5V29.5L21 38L6 29.5V12.5L21 4Z" stroke="#a855f7" stroke-width="1.6"/><path d="M21 12L29 16.5V25.5L21 30L13 25.5V16.5L21 12Z" fill="#a855f7" fill-opacity="0.25" stroke="#e4c9ff" stroke-width="1.2"/></svg>
+          </div>
+          <h3>Performance boost</h3>
+          <p>Optimized rendering and chunk handling for noticeably smoother, higher FPS gameplay out of the box.</p>
+        </div>
+        <div class="feature">
+          <span class="num">02</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><rect x="7" y="7" width="28" height="28" rx="6" stroke="#a855f7" stroke-width="1.6"/><path d="M14 21H28M21 14V28" stroke="#e4c9ff" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <h3>One-click mod install</h3>
+          <p>Browse, install, and update mods from inside the launcher — no manual file dragging, no version guesswork.</p>
+        </div>
+        <div class="feature">
+          <span class="num">03</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="21" r="14" stroke="#a855f7" stroke-width="1.6"/><circle cx="21" cy="21" r="6" fill="#a855f7" fill-opacity="0.3" stroke="#e4c9ff" stroke-width="1.2"/></svg>
+          </div>
+          <h3>Custom HUD & cosmetics</h3>
+          <p>Personalize your overlay, cape, and in-game look with options that stay out of your way while you play.</p>
+        </div>
+        <div class="feature">
+          <span class="num">04</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M8 30V16L21 8L34 16V30" stroke="#a855f7" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 30V21H26V30" stroke="#e4c9ff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Own launcher</h3>
+          <p>A dedicated launcher handles accounts, versions, and updates — Door Client stays out of your Minecraft folder.</p>
+        </div>
+        <div class="feature">
+          <span class="num">05</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M21 6C13 6 6 13 6 21C6 29 13 36 21 36" stroke="#a855f7" stroke-width="1.6" stroke-linecap="round"/><path d="M28 12L34 12L34 18" stroke="#e4c9ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 12L23 23" stroke="#e4c9ff" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Auto updates</h3>
+          <p>New builds roll out automatically, so you're always running the latest, most stable version of the client.</p>
+        </div>
+        <div class="feature">
+          <span class="num">06</span>
+          <div class="feature-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><rect x="9" y="12" width="24" height="18" rx="3" stroke="#a855f7" stroke-width="1.6"/><path d="M9 18H33" stroke="#e4c9ff" stroke-width="1.6"/></svg>
+          </div>
+          <h3>Built by players</h3>
+          <p>Made and maintained by a small team that actually plays with it daily — features ship because we wanted them too.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="connect" class="connect-section">
+    <div class="wrap">
+      <div class="section-head" style="text-align:center; margin:0 auto 10px;">
+        <span class="k">How it connects</span>
+        <h2>Everything ties back to one client.</h2>
+      </div>
+    </div>
+
+    <div class="connect-sticky-wrap">
+      <div class="connect-stage" id="connect-stage">
+        <svg id="connect-lines" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <!-- lines are injected/measured by JS to reach each node's actual position -->
+        </svg>
+
+        <div class="connect-node connect-center" id="connect-center">
+          <img src="logo.png" alt="Door Client logo">
+        </div>
+
+        <div class="connect-node connect-orbit" data-node style="--angle:-90deg;">
+          <span class="connect-label">Performance</span>
+        </div>
+        <div class="connect-node connect-orbit" data-node style="--angle:-30deg;">
+          <span class="connect-label">Mods</span>
+        </div>
+        <div class="connect-node connect-orbit" data-node style="--angle:30deg;">
+          <span class="connect-label">HUD</span>
+        </div>
+        <div class="connect-node connect-orbit" data-node style="--angle:90deg;">
+          <span class="connect-label">Launcher</span>
+        </div>
+        <div class="connect-node connect-orbit" data-node style="--angle:150deg;">
+          <span class="connect-label">Updates</span>
+        </div>
+        <div class="connect-node connect-orbit" data-node style="--angle:210deg;">
+          <span class="connect-label">Community</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true">
+    <svg viewBox="0 0 1180 120" preserveAspectRatio="none">
+      <path d="M0,0 C 300,120 880,120 1180,0 L1180,0 L0,0 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+
+  <section id="showcase">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="k">Showcase</span>
+        <h2>What it looks like in-game.</h2>
+        <p>A quick look at the launcher and the HUD — screenshots go here once your build is ready to show off. Scroll to see each one stack on top of the last.</p>
+      </div>
+
+      <div class="card-stack">
+        <div class="stack-item">
+          <div class="stack-card">
+            <svg class="glyph" viewBox="0 0 42 42" fill="none"><path d="M21 4L36 12.5V29.5L21 38L6 29.5V12.5L21 4Z" stroke="#e4c9ff" stroke-width="1"/></svg>
+            <span class="tag">launcher — home</span>
+          </div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-card">
+            <svg class="glyph" viewBox="0 0 42 42" fill="none"><rect x="9" y="12" width="24" height="18" rx="3" stroke="#e4c9ff" stroke-width="1"/></svg>
+            <span class="tag">in-game HUD</span>
+          </div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-card">
+            <svg class="glyph" viewBox="0 0 42 42" fill="none"><circle cx="21" cy="21" r="14" stroke="#e4c9ff" stroke-width="1"/></svg>
+            <span class="tag">mod browser</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="k">Get Door Client</span>
+        <h2>Step through the door.</h2>
+        <p>Free to download. Pick your platform below to get the latest build.</p>
+      </div>
+      <div class="platforms">
+        <a href="https://github.com/doorclient01/Door-client-website/releases/download/v1.0/DoorClient-1.0.0.1.exe" class="platform">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 4L10 3V10.5H2V4Z" fill="#e4c9ff"/><path d="M11.5 2.8L20 1.5V10.4H11.5V2.8Z" fill="#e4c9ff"/><path d="M2 11.5H10V19L2 18V11.5Z" fill="#e4c9ff"/><path d="M11.5 11.5H20V20.5L11.5 19.2V11.5Z" fill="#e4c9ff"/></svg>
+          <span><span class="pname">Windows</span><br><span class="pmeta">.exe installer</span></span>
+        </a>
+      </div>
+      <p class="version-note">Latest build: <b>v1.0.0</b></p>
+    </div>
+  </section>
+
+  <section id="creators" class="creators">
+    <div class="wrap">
+      <div class="section-head" style="text-align:center; margin:0 auto 48px;">
+        <span class="k">Made by</span>
+        <h2>The people behind Door Client.</h2>
+      </div>
+      <div class="creator-grid">
+        <a href="https://www.youtube.com/@Saturo_Mc" target="_blank" rel="noreferrer" class="creator-card">
+          <img src="saturomc_head.png" alt="SaturoMc" class="creator-avatar">
+          <span class="creator-name">SaturoMc</span>
+          <span class="creator-subscribe">Subscribe</span>
+        </a>
+        <a href="https://www.youtube.com/@Alsofoxy2" target="_blank" rel="noreferrer" class="creator-card">
+          <img src="alsofoxy_head.png" alt="AlsoFoxy" class="creator-avatar">
+          <span class="creator-name">AlsoFoxy</span>
+          <span class="creator-subscribe">Subscribe</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-brand">
+        <img src="logo.png" alt="Door Client logo">
+        <span>Door Client</span>
+      </div>
+      <div class="foot-links">
+        <a href="#">Discord</a>
+        <a href="#">GitHub</a>
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <span>© 2026 Door Client. Not affiliated with Mojang or Microsoft.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ---------- FAQ Chat Widget ---------- -->
+<button class="faq-launcher" id="faq-launcher" aria-label="Open help chat" aria-expanded="false">
+  <svg class="faq-icon-chat" viewBox="0 0 120 120" aria-hidden="true">
+    <defs>
+      <radialGradient id="auroraCoreBtn" cx="46%" cy="42%" r="62%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="22%" stop-color="#8ff0ff"/>
+        <stop offset="52%" stop-color="#a78bfa"/>
+        <stop offset="80%" stop-color="#6ea8fe"/>
+        <stop offset="100%" stop-color="#6ea8fe" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="auroraHaloBtn" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#bff2ff" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#bff2ff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="auroraHaloBlurBtn" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="9"/>
+      </filter>
+      <filter id="auroraEdgeBlurBtn" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.4"/>
+      </filter>
+      <filter id="auroraLineShadowBtn" x="-60%" y="-60%" width="220%" height="220%">
+        <feDropShadow dx="0" dy="0" stdDeviation="1" flood-color="#160825" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <circle cx="60" cy="60" r="52" fill="url(#auroraHaloBtn)" filter="url(#auroraHaloBlurBtn)"/>
+    <circle cx="60" cy="60" r="34" fill="url(#auroraCoreBtn)" filter="url(#auroraEdgeBlurBtn)"/>
+    <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#auroraLineShadowBtn)">
+      <path d="M40 47 Q49 36 59 44"/>
+      <path d="M61 44 Q71 36 80 47"/>
+      <path d="M60 56 V68 H67"/>
+    </g>
+    <circle class="faq-eye" cx="48" cy="57" r="2.8" fill="#ffffff" filter="url(#auroraLineShadowBtn)"/>
+    <circle class="faq-eye" cx="72" cy="57" r="2.8" fill="#ffffff" filter="url(#auroraLineShadowBtn)"/>
+  </svg>
+  <svg class="faq-icon-close" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
+  <span class="faq-dot"></span>
+</button>
+
+<div class="faq-panel" id="faq-panel" role="dialog" aria-label="Door Client help chat">
+  <div class="faq-head">
+    <svg class="faq-avatar" viewBox="0 0 120 120" aria-hidden="true">
+      <defs>
+        <radialGradient id="auroraCoreHead" cx="46%" cy="42%" r="62%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="22%" stop-color="#8ff0ff"/>
+          <stop offset="52%" stop-color="#a78bfa"/>
+          <stop offset="80%" stop-color="#6ea8fe"/>
+          <stop offset="100%" stop-color="#6ea8fe" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="auroraHaloHead" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#bff2ff" stop-opacity="0.55"/>
+          <stop offset="100%" stop-color="#bff2ff" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="auroraHaloBlurHead" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="9"/>
+        </filter>
+        <filter id="auroraEdgeBlurHead" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.4"/>
+        </filter>
+        <filter id="auroraLineShadowHead" x="-60%" y="-60%" width="220%" height="220%">
+          <feDropShadow dx="0" dy="0" stdDeviation="1" flood-color="#160825" flood-opacity="0.5"/>
+        </filter>
+      </defs>
+      <circle cx="60" cy="60" r="52" fill="url(#auroraHaloHead)" filter="url(#auroraHaloBlurHead)"/>
+      <circle cx="60" cy="60" r="34" fill="url(#auroraCoreHead)" filter="url(#auroraEdgeBlurHead)"/>
+      <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#auroraLineShadowHead)">
+        <path d="M40 47 Q49 36 59 44"/>
+        <path d="M61 44 Q71 36 80 47"/>
+        <path d="M60 56 V68 H67"/>
+      </g>
+      <circle class="faq-eye" cx="48" cy="57" r="2.8" fill="#ffffff" filter="url(#auroraLineShadowHead)"/>
+      <circle class="faq-eye" cx="72" cy="57" r="2.8" fill="#ffffff" filter="url(#auroraLineShadowHead)"/>
+    </svg>
+    <div>
+      <div class="t">Nova</div>
+      <div class="s"><span class="live"></span> Door Client assistant · powered by AI</div>
+    </div>
+  </div>
+  <div class="faq-body" id="faq-body"></div>
+  <div class="faq-inputrow">
+    <div class="nova-input-wrap" id="nova-input-wrap">
+      <div class="nova-input-border" aria-hidden="true"></div>
+      <div class="nova-input-inner">
+        <span class="nova-input-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <input id="faq-input" type="text" placeholder="Type your question…" autocomplete="off">
+      </div>
+    </div>
+    <button id="faq-send" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l16-8-6 16-3-7-7-1z" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<nav class="mac-dock" id="mac-dock" role="toolbar" aria-label="Quick navigation">
+  <a href="#" class="dock-item" data-label="Home">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="dock-tooltip">Home</span>
+  </a>
+  <a href="#features" class="dock-item" data-label="Features">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
+    <span class="dock-tooltip">Features</span>
+  </a>
+  <a href="#showcase" class="dock-item" data-label="Showcase">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 15l4.5-4.5a1.5 1.5 0 0 1 2.1 0L14 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="9" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span class="dock-tooltip">Showcase</span>
+  </a>
+  <a href="#download" class="dock-item" data-label="Download">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="dock-tooltip">Download</span>
+  </a>
+  <a href="#" class="dock-item" data-label="Discord">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M19 5.5c-1.4-.65-2.9-1.1-4.5-1.35l-.25.5c1.4.35 2.65.85 3.8 1.55C16.6 5.4 14.4 5 12 5s-4.6.4-6.05.9c1.15-.7 2.4-1.2 3.8-1.55l-.25-.5C7.9 4.4 6.4 4.85 5 5.5 3.4 8.4 2.6 11.5 3 14.5c1.6 1.2 3.2 1.9 4.7 2.35l.6-1.1c-.8-.3-1.55-.65-2.25-1.1.2-.15.4-.3.6-.4 3.4 1.5 7.1 1.5 10.5 0 .2.1.4.25.6.4-.7.45-1.45.8-2.25 1.1l.6 1.1c1.5-.45 3.1-1.15 4.7-2.35.5-3.5-.5-6.55-2-9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="9" cy="11.5" r="1.2" fill="currentColor"/><circle cx="15" cy="11.5" r="1.2" fill="currentColor"/></svg>
+    <span class="dock-tooltip">Discord</span>
+  </a>
+  <a href="https://github.com/doorclient01/Door-client-website" target="_blank" rel="noreferrer" class="dock-item" data-label="GitHub">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.35 4.68-4.58 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.58.69.48A10 10 0 0 0 12 2Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    <span class="dock-tooltip">GitHub</span>
+  </a>
+</nav>
+
+<script type="module">
+  // Loaded dynamically from CDN — no build step needed for this static site.
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const canvas = document.getElementById('tubes-canvas');
+    const loadingEl = document.getElementById('tubes-loading');
+    const sectionEl = document.querySelector('.hero');
+    if (!canvas || !sectionEl) return;
+
+    let app = null;
+
+    async function initTubes() {
+      try {
+        const module = await import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js');
+        const TubesCursor = module.default;
+
+        app = TubesCursor(canvas, {
+          tubes: {
+            colors: ["#a855f7", "#7c3aed", "#e4c9ff"],
+            lights: {
+              intensity: 200,
+              colors: ["#a855f7", "#7c3aed", "#c084fc", "#e4c9ff"]
+            }
+          }
+        });
+
+        if (loadingEl) {
+          loadingEl.style.opacity = '0';
+          setTimeout(() => loadingEl.remove(), 400);
+        }
+      } catch (err) {
+        // CDN blocked / offline / WebGL unavailable — fail quietly, keep the plain dark section.
+        console.error('[TubesBackground] failed to load:', err);
+        if (loadingEl) loadingEl.textContent = 'Background unavailable';
+      }
+    }
+
+    sectionEl.addEventListener('click', () => {
+      if (!app) return;
+      const randomColors = (count) =>
+        Array.from({ length: count }, () =>
+          '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+      app.tubes.setColors(randomColors(3));
+      app.tubes.setLightsColors(randomColors(4));
+    });
+
+    initTubes();
+  })();
+</script>
+
+<script>
+// macOS-style dock magnification — vanilla JS version of the
+// MagnificationDock component (no framer-motion dependency needed here).
+(function () {
+  var dock = document.getElementById('mac-dock');
+  if (!dock) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var items = Array.prototype.slice.call(dock.querySelectorAll('.dock-item'));
+  var BASE = 42;        // baseItemSize
+  var MAX = 66;         // magnification
+  var DISTANCE = 140;   // px range of influence around the cursor
+
+  function applyMagnification(mouseX) {
+    items.forEach(function (item) {
+      var rect = item.getBoundingClientRect();
+      var center = rect.left + rect.width / 2;
+      var dist = Math.abs(mouseX - center);
+      var scale = dist > DISTANCE ? BASE : MAX - (dist / DISTANCE) * (MAX - BASE);
+      item.style.width = scale + 'px';
+      item.style.height = scale + 'px';
+    });
+  }
+
+  function reset() {
+    items.forEach(function (item) {
+      item.style.width = BASE + 'px';
+      item.style.height = BASE + 'px';
+    });
+  }
+
+  dock.addEventListener('mousemove', function (e) {
+    applyMagnification(e.clientX);
+  });
+  dock.addEventListener('mouseleave', reset);
+
+  reset();
+})();
+</script>
+
+<script>
+// ---------- Connect section: scroll-driven hub-and-spoke ----------
+// As the user scrolls through .connect-sticky-wrap (pinned via position:sticky),
+// the center logo grows and each smaller feature node flies out along its
+// --angle and gets wired up to the center with an SVG line that "draws" in.
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var wrap = document.querySelector('.connect-sticky-wrap');
+  var stage = document.getElementById('connect-stage');
+  var center = document.getElementById('connect-center');
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.connect-orbit'));
+  var svg = document.getElementById('connect-lines');
+  if (!wrap || !stage || !center || !svg || !nodes.length) return;
+
+  // One reusable <path> per node — created once, updated every frame.
+  var paths = nodes.map(function () {
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(p);
+    return p;
+  });
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function getRadius(w, h) {
+    var base = Math.min(w, h);
+    var r = clamp(base * 0.32, 110, 240);
+    return Math.min(r, base / 2 - 60); // keep nodes inside the (overflow:hidden) stage
+  }
+
+  var raf = null;
+  var mouseNX = 0, mouseNY = 0; // normalized cursor position, -1..1
+
+  window.addEventListener('mousemove', function (e) {
+    mouseNX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseNY = (e.clientY / window.innerHeight) * 2 - 1;
+    requestRender();
+  }, { passive: true });
+
+  function render() {
+    raf = null;
+
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+    // Scroll progress 0 -> 1 across the pinned scroll range. On small screens
+    // (where .connect-stage is no longer sticky) or with reduced motion,
+    // just render the fully-connected end state.
+    var progress = 1;
+    var isPinned = window.innerWidth > 860 && !reduceMotion;
+    if (isPinned) {
+      var rect = wrap.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      progress = total > 0 ? clamp(-rect.top / total, 0, 1) : 1;
+    }
+
+    var cx = w / 2, cy = h / 2;
+    var radius = getRadius(w, h);
+
+    // Subtle cursor parallax — follows the mouse the whole time this
+    // section is on screen, layered on top of the scroll-driven motion.
+    var parallaxOn = !reduceMotion && isPinned;
+    var pcx = parallaxOn ? mouseNX * 10 : 0;
+    var pcy = parallaxOn ? mouseNY * 10 : 0;
+
+    // Center logo grows as the shapes connect to it.
+    var centerScale = 1 + easeOutCubic(progress) * 0.4;
+    center.style.transform = 'translate(-50%,-50%) translate(' + pcx.toFixed(1) + 'px,' + pcy.toFixed(1) + 'px) scale(' + centerScale.toFixed(3) + ')';
+    center.style.boxShadow = '0 0 ' + (40 + progress * 30) + 'px -6px rgba(168,85,247,' + (0.6 + progress * 0.3).toFixed(2) + ')';
+
+    nodes.forEach(function (node, i) {
+      var angleDeg = parseFloat(getComputedStyle(node).getPropertyValue('--angle')) || 0;
+      var angle = angleDeg * Math.PI / 180;
+
+      // Stagger each node slightly so they connect one after another, not all at once.
+      var start = i * (0.5 / nodes.length);
+      var t = clamp((progress - start) / (1 - start), 0, 1);
+      var e = easeOutCubic(t);
+
+      var px = parallaxOn ? mouseNX * 22 * e : 0;
+      var py = parallaxOn ? mouseNY * 22 * e : 0;
+
+      var x = Math.cos(angle) * radius * e + px;
+      var y = Math.sin(angle) * radius * e + py;
+      var scale = 0.55 + 0.45 * e;
+
+      node.style.opacity = e;
+      node.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+      node.classList.toggle('is-connected', e > 0.96);
+
+      var nx = cx + Math.cos(angle) * radius + px + pcx;
+      var ny = cy + Math.sin(angle) * radius + py + pcy;
+      var path = paths[i];
+      path.setAttribute('d', 'M ' + (cx + pcx) + ' ' + (cy + pcy) + ' L ' + nx + ' ' + ny);
+
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = String(len * (1 - e));
+      path.style.opacity = e > 0.02 ? 1 : 0;
+    });
+  }
+
+  function requestRender() {
+    if (raf) return;
+    raf = requestAnimationFrame(render);
+  }
+
+  window.addEventListener('scroll', requestRender, { passive: true });
+  window.addEventListener('resize', requestRender);
+  requestRender();
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+// MagicBento-style hover effects (spotlight, border glow, particles, tilt,
+// magnetism, click ripple) adapted to the Features grid — vanilla JS + GSAP,
+// no React/build step needed since this is a static site.
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (typeof gsap === 'undefined') return; // CDN blocked/offline — fail quietly
+
+  var GLOW = '168, 85, 247'; // matches --violet-2 in the site palette
+  var PARTICLE_COUNT = 8;
+  // Spotlight/tilt/magnetism/particles need a real mouse to look right —
+  // keep those desktop-only. The click ripple works on tap too, so it
+  // stays enabled at every width (mobile included).
+  var enableHoverFX = window.innerWidth > 860;
+
+  var grid = document.querySelector('.feature-grid');
+  if (!grid) return;
+
+  Array.prototype.forEach.call(grid.querySelectorAll('.feature'), function (card) {
+    var particles = [];
+    var timeouts = [];
+    var hovered = false;
+    var autoClearTimer = null;
+
+    var clearParticles = function () {
+      timeouts.forEach(clearTimeout);
+      timeouts = [];
+      particles.forEach(function (p) {
+        gsap.to(p, {
+          scale: 0, opacity: 0, duration: 0.3, ease: 'back.in(1.7)',
+          onComplete: function () { p.remove(); }
+        });
+      });
+      particles = [];
+    };
+
+    var spawnParticles = function () {
+      if (!hovered) return;
+      var rect = card.getBoundingClientRect();
+      for (var i = 0; i < PARTICLE_COUNT; i++) {
+        (function (i) {
+          var t = setTimeout(function () {
+            if (!hovered) return;
+            var x = Math.random() * rect.width;
+            var y = Math.random() * rect.height;
+            var el = document.createElement('div');
+            el.className = 'mb-particle';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            card.appendChild(el);
+            particles.push(el);
+
+            gsap.fromTo(el, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' });
+            gsap.to(el, {
+              x: (Math.random() - 0.5) * 70,
+              y: (Math.random() - 0.5) * 70,
+              rotation: Math.random() * 360,
+              duration: 2 + Math.random() * 2,
+              ease: 'none',
+              repeat: -1,
+              yoyo: true
+            });
+          }, i * 100);
+          timeouts.push(t);
+        })(i);
+      }
+    };
+
+    // Bubbles work at every width: hover triggers them on desktop,
+    // tap/click triggers a burst on touch devices (see click handler below).
+    card.addEventListener('mouseenter', function () {
+      hovered = true;
+      spawnParticles();
+    });
+
+    card.addEventListener('mouseleave', function () {
+      hovered = false;
+      clearParticles();
+      if (enableHoverFX) {
+        gsap.to(card, { rotateX: 0, rotateY: 0, x: 0, y: 0, duration: 0.3, ease: 'power2.out' });
+      }
+    });
+
+    if (enableHoverFX) {
+      var spotlight = document.createElement('div');
+      spotlight.className = 'spotlight-overlay';
+      card.appendChild(spotlight);
+
+      var glow = document.createElement('div');
+      glow.className = 'border-glow';
+      card.appendChild(glow);
+
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', x + 'px');
+        card.style.setProperty('--mouse-y', y + 'px');
+        card.style.setProperty('--glow-color', 'rgba(' + GLOW + ', 0.15)');
+
+        var cx = rect.width / 2, cy = rect.height / 2;
+        var rotateX = ((y - cy) / cy) * -6;
+        var rotateY = ((x - cx) / cx) * 6;
+        gsap.to(card, { rotateX: rotateX, rotateY: rotateY, duration: 0.1, ease: 'power2.out', transformPerspective: 800 });
+
+        var magnetX = (x - cx) * 0.04;
+        var magnetY = (y - cy) * 0.04;
+        gsap.to(card, { x: magnetX, y: magnetY, duration: 0.3, ease: 'power2.out' });
+      });
+    }
+
+    // Click ripple: works on desktop click and mobile tap alike.
+    card.addEventListener('click', function (e) {
+      var rect = card.getBoundingClientRect();
+      var cx = (e.clientX !== undefined && e.clientX !== 0) ? e.clientX : rect.left + rect.width / 2;
+      var cy = (e.clientY !== undefined && e.clientY !== 0) ? e.clientY : rect.top + rect.height / 2;
+      var x = cx - rect.left;
+      var y = cy - rect.top;
+      var ripple = document.createElement('div');
+      ripple.style.cssText = 'position:absolute;width:10px;height:10px;border-radius:50%;' +
+        'background:rgba(' + GLOW + ',0.5);left:' + x + 'px;top:' + y + 'px;pointer-events:none;z-index:20;';
+      card.appendChild(ripple);
+      gsap.fromTo(ripple, { scale: 0, opacity: 1 }, {
+        scale: 50, opacity: 0, duration: 0.8, ease: 'power2.out',
+        onComplete: function () { ripple.remove(); }
+      });
+
+      // On touch devices there's no hover, so give the bubbles a burst on tap.
+      if (!hovered) {
+        hovered = true;
+        spawnParticles();
+        clearTimeout(autoClearTimer);
+        autoClearTimer = setTimeout(function () {
+          hovered = false;
+          clearParticles();
+        }, 1400);
+      }
+    });
+  });
+})();
+</script>
+
+<script>
+// ---------- FAQ Chat Widget: Nova, a real AI agent ----------
+// Talks to a small Cloudflare Worker (see worker.js) which securely
+// forwards the conversation to a free LLM API (Groq — Llama 3.3 70B)
+// and streams back a real, context-aware answer. No API key ever
+// touches the browser.
+(function () {
+  var launcher = document.getElementById('faq-launcher');
+  var panel = document.getElementById('faq-panel');
+  var body = document.getElementById('faq-body');
+  var input = document.getElementById('faq-input');
+  var sendBtn = document.getElementById('faq-send');
+  if (!launcher || !panel || !body || !input || !sendBtn) return;
+
+  // 👉 After you deploy worker.js to Cloudflare Workers, paste its URL here.
+  var WORKER_URL = 'https://nova.doorclient81.workers.dev/';
+
+  // Nova's personality + everything it knows about Door Client. The worker
+  // sends this as the system prompt, so answers stay accurate and on-brand
+  // instead of the model inventing things.
+  var SYSTEM_PROMPT =
+    "You are Nova, the friendly AI support agent embedded on the Door Client website. " +
+    "Door Client is a free, lightweight, FPS-focused Minecraft launcher for Windows with: " +
+    "one-click mod install/update (no manual file dragging), a custom in-game HUD overlay and " +
+    "cosmetics/capes you can personalize from the launcher's settings, automatic updates to the " +
+    "latest stable build, optimized rendering/chunk handling for noticeably smoother FPS, and its " +
+    "own dedicated launcher that manages accounts/versions/updates without touching the user's " +
+    "Minecraft folder. It is completely free. It is built and maintained by a small team who uses " +
+    "it daily; like any third-party client, users should check their server's rules before using it " +
+    "there. Support and community links (Discord, GitHub) are in the site footer. The download is " +
+    "the Windows .exe installer in the Download section of this page. " +
+    "Reply in the same language the visitor writes in (English or Roman Urdu are both common here). " +
+    "Keep answers short, warm, and specific — 1-4 sentences unless the question needs more. " +
+    "If you don't know something about Door Client, say so honestly and point the visitor to " +
+    "Discord/GitHub in the footer instead of guessing.";
+
+  var history = []; // {role: 'user'|'assistant', content: string}
+
+  var GREETING_WORDS = ['hi', 'hii', 'hiii', 'hello', 'hey', 'heya', 'yo', 'salam', 'hola'];
+
+  function isGreeting(text) {
+    var clean = text.toLowerCase().replace(/[^a-z\s]/g, '').trim();
+    if (!clean) return false;
+    var words = clean.split(/\s+/);
+    if (words.length > 3) return false;
+    return words.some(function (w) { return GREETING_WORDS.indexOf(w) !== -1; });
+  }
+
+  function addMessage(text, who) {
+    var el = document.createElement('div');
+    el.className = 'faq-msg ' + who;
+    el.textContent = text;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+    return el;
+  }
+
+  function addTyping() {
+    var el = document.createElement('div');
+    el.className = 'faq-msg bot faq-typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+    return el;
+  }
+
+  var SUGGESTED_PROMPTS_EN = ['How do I download it?', 'Is it free?', 'How do I install mods?', 'Does it boost FPS?'];
+  var SUGGESTED_PROMPTS_UR = ['Download kaise karein?', 'Kya yeh free hai?', 'Mods kaise install karein?', 'FPS boost hoti hai?'];
+
+  function addChips(lang) {
+    var list = lang === 'ur' ? SUGGESTED_PROMPTS_UR : SUGGESTED_PROMPTS_EN;
+    var wrap = document.createElement('div');
+    wrap.className = 'faq-chips';
+    list.forEach(function (q) {
+      var chip = document.createElement('button');
+      chip.className = 'faq-chip';
+      chip.type = 'button';
+      chip.textContent = q;
+      chip.addEventListener('click', function () { handleUserText(q); });
+      wrap.appendChild(chip);
+    });
+    body.appendChild(wrap);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function askNova(userText) {
+    var typingEl = addTyping();
+    sendBtn.disabled = true;
+
+    fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYSTEM_PROMPT,
+        messages: history.concat([{ role: 'user', content: userText }])
+      })
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('bad status ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        typingEl.remove();
+        var reply = (data && data.reply) ? data.reply.trim() : '';
+        if (!reply) throw new Error('empty reply');
+        addMessage(reply, 'bot');
+        history.push({ role: 'user', content: userText });
+        history.push({ role: 'assistant', content: reply });
+        // keep only the last ~12 turns so the request stays small
+        if (history.length > 24) history = history.slice(history.length - 24);
+      })
+      .catch(function () {
+        typingEl.remove();
+        addMessage(
+          "I'm having trouble reaching my brain right now 🙈 — please try again in a moment, or ping us on Discord/GitHub in the footer.",
+          'bot'
+        );
+      })
+      .finally(function () {
+        sendBtn.disabled = false;
+      });
+  }
+
+  function handleUserText(text) {
+    text = text.trim();
+    if (!text) return;
+    addMessage(text, 'user');
+    input.value = '';
+
+    if (isGreeting(text) && history.length === 0) {
+      addMessage("Hello! I'm Nova 👋 Ask me anything about Door Client — downloads, mods, HUD, FPS, whatever's on your mind.", 'bot');
+      addChips('en');
+      history.push({ role: 'user', content: text });
+      history.push({ role: 'assistant', content: "Hello! I'm Nova. Ask me anything about Door Client." });
+      return;
+    }
+
+    askNova(text);
+  }
+
+  function openPanel() {
+    panel.classList.add('open');
+    launcher.classList.add('open');
+    launcher.setAttribute('aria-expanded', 'true');
+    if (!body.childElementCount) {
+      addMessage("Hello! I'm Nova, the Door Client AI assistant. Ask me anything — feel free to write in whatever language you're comfortable with.", 'bot');
+      addChips('en');
+    }
+    input.focus();
+  }
+
+  function closePanel() {
+    panel.classList.remove('open');
+    launcher.classList.remove('open');
+    launcher.setAttribute('aria-expanded', 'false');
+  }
+
+  launcher.addEventListener('click', function () {
+    if (panel.classList.contains('open')) closePanel(); else openPanel();
+  });
+
+  sendBtn.addEventListener('click', function () { handleUserText(input.value); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleUserText(input.value);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!panel.classList.contains('open')) return;
+    if (panel.contains(e.target) || launcher.contains(e.target)) return;
+    closePanel();
+  });
+
+  // ---------- Eyes follow the cursor ----------
+  // Nova's dot eyes gently shift toward wherever the mouse is, on both
+  // the launcher icon and the panel-header avatar.
+  var eyeEls = document.querySelectorAll('.faq-eye');
+  var EYE_RANGE = 2.6; // px, how far the pupils can drift
+
+  function updateEyes(clientX, clientY) {
+    eyeEls.forEach(function (eye) {
+      var svg = eye.closest('svg');
+      if (!svg) return;
+      var rect = svg.getBoundingClientRect();
+      if (!rect.width || !rect.height) return; // hidden (e.g. panel closed)
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var dx = clientX - cx;
+      var dy = clientY - cy;
+      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = (dx / dist) * EYE_RANGE;
+      var ny = (dy / dist) * EYE_RANGE;
+      eye.style.transform = 'translate(' + nx.toFixed(2) + 'px,' + ny.toFixed(2) + 'px)';
+    });
+  }
+
+  window.addEventListener('mousemove', function (e) {
+    updateEyes(e.clientX, e.clientY);
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
