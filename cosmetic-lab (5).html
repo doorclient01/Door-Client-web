@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmetic Lab — Door Client</title>
+<meta name="description" content="Unlock free Door Client capes by watching ads.">
+<meta name="robots" content="index, follow">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #050a0c; --teal: #2dd4bf; --teal-2: #38bdf8; --mint: #c8fff3;
+    --mint-soft: #a9d8d0; --ink: #eafffb; --ink-dim: #94aca8;
+    --line: rgba(200,255,243,0.14); --gold: #f0b429;
+    --display: 'Space Grotesk', sans-serif; --body: 'Manrope', sans-serif; --mono: 'JetBrains Mono', monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; background: var(--bg); }
+  body{
+    background:
+      radial-gradient(60% 45% at 50% 0%, rgba(45,212,191,0.14), transparent 65%),
+      var(--bg);
+    color: var(--ink); font-family: var(--body); min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 32px; }
+  header{ position:sticky; top:0; z-index:100; backdrop-filter: blur(14px); background: rgba(5,10,12,0.65); border-bottom: 1px solid var(--line); }
+  nav{ max-width:1100px; margin:0 auto; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand img{ width:34px; height:34px; border-radius:8px; display:block; }
+  .brand span{ font-family:var(--display); font-weight:700; font-size:1.1rem; }
+  .brand .lab-tag{ font-family:var(--mono); font-size:0.68rem; letter-spacing:.06em; color:var(--teal); border:1px solid rgba(45,212,191,0.35); padding:2px 8px; border-radius:999px; margin-left:4px; text-transform:uppercase; }
+  .navlinks{ display:flex; gap:28px; align-items:center; }
+  .navlinks a{ font-size:0.88rem; color:var(--ink-dim); font-weight:600; transition:color .2s ease; }
+  .navlinks a:hover{ color:var(--mint); }
+  main{ padding:56px 0 90px; }
+  .eyebrow{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:0.76rem; letter-spacing:0.08em; color:var(--mint-soft); text-transform:uppercase; border:1px solid var(--line); padding:6px 14px; border-radius:999px; background: rgba(45,212,191,0.06); margin-bottom:20px; }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 10px 2px var(--teal); }
+  h1{ font-family:var(--display); font-weight:700; font-size:clamp(2rem, 4.2vw, 2.9rem); line-height:1.08; letter-spacing:-0.01em; margin-bottom:14px; }
+  h1 .accent{ background: linear-gradient(120deg, var(--mint) 10%, var(--teal-2) 55%, var(--teal) 90%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lead{ color:var(--ink-dim); font-size:1.02rem; line-height:1.65; max-width:620px; margin-bottom:20px; }
+  .status-line{ font-size:13px; color:var(--ink-dim); margin-bottom:44px; }
+  .status-line b{ color:var(--mint); }
+
+  .grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; }
+  @media (max-width:900px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width:520px){ .grid{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: rgba(10,20,22,0.65); border:1px solid var(--line); border-radius:16px;
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  .card .thumb{
+    width:100%; aspect-ratio: 2/3; background-size:cover; background-position:center;
+    position:relative;
+  }
+  .card .thumb .lock-badge{
+    position:absolute; top:10px; right:10px;
+    background:rgba(5,10,12,0.75); border:1px solid var(--line);
+    border-radius:999px; padding:4px 10px; font-size:11px; color:var(--ink-dim);
+  }
+  .card .thumb .lock-badge.unlocked{ color:var(--mint); border-color:rgba(45,212,191,0.4); }
+  .card .info{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .card .name{ font-family:var(--display); font-weight:600; font-size:0.98rem; }
+  .card button{
+    margin-top:auto; padding:10px; border:none; border-radius:9px; font-weight:700; font-size:12.5px; cursor:pointer; transition:.15s;
+  }
+  .card button.unlock-btn{
+    background:linear-gradient(120deg, var(--teal-2), var(--teal)); color:#032420;
+  }
+  .card button.unlock-btn:hover{ filter:brightness(1.08); }
+  .card button.unlocked-btn{
+    background:rgba(45,212,191,0.12); color:var(--mint); border:1px solid rgba(45,212,191,0.35);
+  }
+  .card button:disabled{ opacity:.5; cursor:not-allowed; }
+
+  /* ad modal */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+    display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal{
+    width:100%; max-width:420px; background:var(--bg); border:1px solid var(--line);
+    border-radius:16px; padding:28px; text-align:center;
+  }
+  .modal h3{ font-family:var(--display); margin-bottom:8px; }
+  .modal p{ color:var(--ink-dim); font-size:13px; margin-bottom:22px; }
+  .ad-box{
+    width:100%; height:160px; border-radius:10px; background:rgba(255,255,255,0.04);
+    border:1px dashed var(--line); display:flex; align-items:center; justify-content:center;
+    color:var(--ink-dim); font-size:13px; margin-bottom:18px;
+  }
+  .ad-progress{ display:flex; gap:6px; justify-content:center; margin-bottom:20px; }
+  .ad-progress .step{
+    width:32px; height:6px; border-radius:999px; background:rgba(255,255,255,0.08);
+  }
+  .ad-progress .step.done{ background:var(--teal); }
+  .modal button{
+    width:100%; padding:12px; border:none; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer;
+    background:linear-gradient(120deg, var(--teal-2), var(--teal)); color:#032420;
+  }
+  .modal button:disabled{ opacity:.5; cursor:not-allowed; }
+  .modal .close-link{ display:block; margin-top:14px; font-size:12px; color:var(--ink-dim); cursor:pointer; }
+
+  footer{ text-align:center; color:var(--ink-dim); font-size:11px; padding:30px 0 40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand">
+      <img src="logo.png" alt="Door Client logo">
+      <span>Door Client</span>
+      <span class="lab-tag">Cosmetic Lab</span>
+    </div>
+    <div class="navlinks">
+      <a href="index.html" class="home-link">← Back to site</a>
+      <a href="login.html" id="navAuthLink">Sign In</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> Free capes, unlocked by watching ads</span>
+    <h1>Pick a <span class="accent">cape</span>.</h1>
+    <p class="lead">Every cape below is free. Watch 3 short ads to unlock any design — once unlocked, it's yours forever.</p>
+    <p class="status-line" id="accountStatus">Checking your account…</p>
+
+    <div class="grid" id="capeGrid"></div>
+  </div>
+</main>
+
+<footer>Cosmetic Lab — Door Client.</footer>
+
+<div class="modal-overlay" id="adModal">
+  <div class="modal">
+    <h3 id="modalCapeName">Unlock cape</h3>
+    <p>Watch 3 short ads to unlock this cape for free.</p>
+    <div class="ad-box" id="adBox">Ad 1 of 3 playing…</div>
+    <div class="ad-progress" id="adProgress">
+      <div class="step" data-i="0"></div>
+      <div class="step" data-i="1"></div>
+      <div class="step" data-i="2"></div>
+    </div>
+    <button id="adActionBtn">Watch Ad</button>
+    <span class="close-link" id="closeModal">Cancel</span>
+  </div>
+</div>
+
+<script>
+const BACKEND = 'https://door-client-backend.bonto.run';
+
+const CAPES = [
+  { id: 'dragon-fire',   name: 'Dragon Fire',   image: 'capes/dragon-fire.png' },
+  { id: 'frost-wing',    name: 'Frost Wing',    image: 'capes/frost-wing.png' },
+  { id: 'galaxy-veil',   name: 'Galaxy Veil',   image: 'capes/galaxy-veil.png' },
+  { id: 'royal-gold',    name: 'Royal Gold',    image: 'capes/royal-gold.png' },
+  { id: 'emerald-vine',  name: 'Emerald Vine',  image: 'capes/emerald-vine.png' },
+  { id: 'void-runes',    name: 'Void Runes',    image: 'capes/void-runes.png' },
+  { id: 'sunset-drift',  name: 'Sunset Drift',  image: 'capes/sunset-drift.png' },
+  { id: 'ocean-deep',    name: 'Ocean Deep',    image: 'capes/ocean-deep.png' },
+];
+
+const capeGrid = document.getElementById('capeGrid');
+const accountStatus = document.getElementById('accountStatus');
+const navAuthLink = document.getElementById('navAuthLink');
+const adModal = document.getElementById('adModal');
+const modalCapeName = document.getElementById('modalCapeName');
+const adBox = document.getElementById('adBox');
+const adProgress = document.getElementById('adProgress');
+const adActionBtn = document.getElementById('adActionBtn');
+const closeModal = document.getElementById('closeModal');
+
+let loggedIn = false;
+let unlockedIds = [];
+let currentCape = null;
+let adStep = 0;
+
+function renderGrid(){
+  capeGrid.innerHTML = '';
+  CAPES.forEach(cape => {
+    const isUnlocked = unlockedIds.includes(cape.id);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="thumb" style="background-image:url('${cape.image}')">
+        <span class="lock-badge ${isUnlocked ? 'unlocked' : ''}">${isUnlocked ? 'Unlocked' : 'Locked'}</span>
+      </div>
+      <div class="info">
+        <div class="name">${cape.name}</div>
+        <button class="${isUnlocked ? 'unlocked-btn' : 'unlock-btn'}" data-id="${cape.id}">
+          ${isUnlocked ? '✓ Unlocked' : 'Watch Ads to Unlock'}
+        </button>
+      </div>
+    `;
+    const btn = card.querySelector('button');
+    if (!isUnlocked) {
+      btn.onclick = () => openAdModal(cape);
+    } else {
+      btn.disabled = true;
+    }
+    capeGrid.appendChild(card);
+  });
+}
+
+function openAdModal(cape){
+  if (!loggedIn) {
+    accountStatus.innerHTML = 'Not signed in — <a href="login.html" style="color:var(--teal);">sign in</a> to unlock capes.';
+    return;
+  }
+  currentCape = cape;
+  adStep = 0;
+  modalCapeName.textContent = 'Unlock ' + cape.name;
+  adBox.textContent = 'Ready — click below to watch your first ad';
+  adActionBtn.textContent = 'Watch Ad 1 of 3';
+  adActionBtn.disabled = false;
+  document.querySelectorAll('.ad-progress .step').forEach(s => s.classList.remove('done'));
+  adModal.classList.add('show');
+}
+
+closeModal.onclick = () => adModal.classList.remove('show');
+
+adActionBtn.onclick = () => {
+  adActionBtn.disabled = true;
+  adBox.textContent = `Ad ${adStep + 1} of 3 playing…`;
+
+  // TODO: replace this timeout with a real Monetag rewarded-ad callback.
+  // Call the ad SDK's "show rewarded ad" function here, and only run the
+  // code below inside its "ad watched successfully" callback.
+  setTimeout(() => {
+    adStep++;
+    document.querySelector(`.ad-progress .step[data-i="${adStep - 1}"]`).classList.add('done');
+
+    if (adStep < 3) {
+      adBox.textContent = `Ad ${adStep} of 3 complete`;
+      adActionBtn.textContent = `Watch Ad ${adStep + 1} of 3`;
+      adActionBtn.disabled = false;
+    } else {
+      adBox.textContent = 'All ads watched — unlocking…';
+      unlockCape(currentCape.id);
+    }
+  }, 1800);
+};
+
+async function unlockCape(capeId){
+  const token = localStorage.getItem('doorclient_token');
+  try {
+    const res = await fetch(BACKEND + '/api/cosmetics/unlock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ capeId })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      adBox.textContent = data.error || 'Unlock failed, try again.';
+      return;
+    }
+    unlockedIds = data.unlockedCapes;
+    setTimeout(() => {
+      adModal.classList.remove('show');
+      renderGrid();
+    }, 700);
+  } catch (err) {
+    adBox.textContent = 'Could not reach server.';
+  }
+}
+
+async function checkAccount(){
+  const token = localStorage.getItem('doorclient_token');
+  if (!token) {
+    accountStatus.innerHTML = 'Not signed in — <a href="login.html" style="color:var(--teal);">sign in</a> to unlock capes.';
+    navAuthLink.textContent = 'Sign In';
+    navAuthLink.href = 'login.html';
+    renderGrid();
+    return;
+  }
+  try {
+    const res = await fetch(BACKEND + '/api/cosmetics/status', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    loggedIn = data.loggedIn;
+    unlockedIds = data.unlockedCapes || [];
+
+    if (!loggedIn) {
+      localStorage.removeItem('doorclient_token');
+      localStorage.removeItem('doorclient_email');
+      accountStatus.innerHTML = 'Your session expired — <a href="login.html" style="color:var(--teal);">sign in</a> again.';
+      navAuthLink.textContent = 'Sign In';
+      navAuthLink.href = 'login.html';
+    } else {
+      accountStatus.innerHTML = `Signed in as <b>${data.email}</b> — <b>${unlockedIds.length}</b> of ${CAPES.length} capes unlocked.`;
+      navAuthLink.textContent = data.email;
+      navAuthLink.href = '#';
+    }
+  } catch (err) {
+    accountStatus.innerHTML = 'Could not reach server — is it running?';
+  }
+  renderGrid();
+}
+
+checkAccount();
+</script>
+</body>
+</html>
