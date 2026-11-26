@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmetic Lab – Door Client</title>
+<meta name="description" content="Try Door Client cosmetics on your character before you pick one. Capes, wings, halos, hats and more.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050505;--ink:#fff;--mute:#8c8c8c;--soft:#bdbdbd;--line:#ffffff14;--line2:#ffffff26;--card:#0b0b0b;--serif:'Instrument Serif','Times New Roman',serif;--sans:'Geist',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--silver:linear-gradient(180deg,#fff 0%,#d9d9d9 40%,#7d7d7d 100%)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(900px 500px at 50% -8%,#ffffff1c,transparent 70%),linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% 96px;opacity:.9}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
+:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.wrap{width:min(1180px,100% - 48px);margin-inline:auto}
+.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.025em;line-height:.98}
+.silver{background:var(--silver);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* nav */
+header{position:fixed;top:18px;left:0;right:0;z-index:30;display:flex;justify-content:center;pointer-events:none}
+nav{pointer-events:auto;display:flex;align-items:center;gap:34px;padding:8px 8px 8px 18px;border-radius:999px;background:#0c0c0cb3;backdrop-filter:blur(18px);border:1px solid var(--line2);box-shadow:0 10px 40px #000a}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.brand img{width:26px;height:26px;border-radius:7px}
+.links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--soft)}
+.links a:hover{color:#fff}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;font-size:14px;font-weight:500;background:#fff;color:#000;transition:transform .2s,box-shadow .2s}
+.pill:hover{transform:translateY(-1px);box-shadow:0 8px 30px #ffffff40}
+.pill.out{background:transparent;color:#fff;border:1px solid var(--line2)}
+.pill.out:hover{background:#ffffff12;box-shadow:none}
+.pill.lg{padding:15px 30px;font-size:15px}
+
+/* lab */
+.lab{padding:150px 0 110px}
+.lab-top{text-align:center;margin-bottom:56px}
+.lab-top h1{font-size:clamp(54px,8vw,112px)}
+.lead{max-width:520px;margin:22px auto 0;font-size:18px;color:var(--soft);font-weight:300}
+.lab-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+.stagecard{position:sticky;top:90px;display:flex;flex-direction:column;align-items:center;gap:18px;padding:26px 24px 24px;border-radius:28px;border:1px solid var(--line2);background:radial-gradient(70% 50% at 50% 28%,#ffffff1f,transparent 70%),var(--card);overflow:hidden}
+.stage{perspective:900px;width:100%;display:grid;place-items:center}
+#char{display:block;height:min(58vh,500px);width:auto;max-width:100%;transition:transform .2s ease-in}
+#char.turn{transform:rotateY(90deg)}
+.seg{display:inline-flex;padding:4px;border-radius:999px;border:1px solid var(--line2);background:#ffffff08}
+.seg button{padding:8px 22px;border-radius:999px;border:0;background:none;color:var(--soft);font:inherit;font-size:14px;cursor:pointer}
+.seg button[aria-pressed=true]{background:#fff;color:#000;font-weight:500}
+.stagecard small{color:var(--mute);font-size:12px;text-align:center}
+
+.panel{display:grid;gap:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.ch{padding:7px 14px;border-radius:999px;border:1px solid var(--line2);background:#ffffff08;color:var(--soft);font:inherit;font-size:13px;cursor:pointer;transition:background .15s,color .15s}
+.ch:hover{background:#ffffff18}
+.ch[aria-pressed=true]{background:#fff;color:#000;border-color:#fff}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.it{display:flex;flex-direction:column;gap:8px;padding:8px 8px 10px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--soft);font:inherit;font-size:12px;text-align:left;cursor:pointer;transition:border-color .2s,background .2s}
+.it:hover{border-color:var(--line2)}
+.it[aria-checked=true]{border-color:#fff;background:#ffffff10;color:#fff}
+.it-art{display:block;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:#111;border:1px solid var(--line)}
+.it-art svg,.it-art img{width:100%;height:100%;display:block}
+.it-art img{object-fit:contain;padding:6px}
+img.px{image-rendering:pixelated}
+.it b{font-weight:500;line-height:1.25}
+.rar{display:inline-flex;align-items:center;gap:6px;--rc:#bdbdbd}
+.rar::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--rc)}
+.r-rare{--rc:#8ab8ff}.r-epic{--rc:#a78bfa}.r-legendary{--rc:#ffd27a}
+.info{padding:28px;border-radius:24px;border:1px solid var(--line);background:var(--card)}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{padding:5px 12px;border-radius:999px;border:1px solid var(--line2);font-size:12px;color:var(--soft);background:#ffffff08}
+.info h2{font-family:var(--serif);font-weight:400;font-size:clamp(40px,5vw,60px);letter-spacing:-.025em;line-height:1;margin-top:16px}
+.info p{margin-top:12px;color:var(--soft);font-weight:300;max-width:46ch}
+.act{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.empty{padding:40px 12px;text-align:center;color:var(--mute)}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:50px 0 36px;font-size:14px;color:var(--mute)}
+.copy{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:13px}
+.copy a:hover{color:#fff}
+
+@media (max-width:900px){
+  .links a:not(.pill){display:none}nav{gap:18px}
+  .lab{padding-top:130px}.lab-grid{grid-template-columns:1fr}.stagecard{position:static}
+  #char{height:min(52vh,420px)}
+}
+@media (prefers-reduced-motion:reduce){#char{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+<nav>
+<a class="brand" href="index.html"><img src="logo.png" alt="">Door Client</a>
+<div class="links">
+<a href="index.html#features">Features</a><a href="index.html#store">Store</a><a href="https://discord.gg/md7z9rK7T" target="_blank" rel="noopener">Discord</a>
+<a class="pill" href="https://github.com/doorclient01/Door-client-website/releases/download/v1.0/DoorClient-1.0.0.1.exe">Download</a>
+</div>
+</nav>
+</header>
+
+<main>
+<div class="lab">
+<div class="wrap">
+<div class="lab-top">
+<h1 class="serif silver">Cosmetic Lab</h1>
+<p class="lead">Try any cosmetic on your character before you pick it.</p>
+</div>
+<div class="lab-grid">
+<div class="stagecard">
+<div class="stage"><svg id="char" viewBox="0 0 240 280" role="img" aria-label="Character wearing the selected cosmetic"></svg></div>
+<div class="seg" role="group" aria-label="Preview angle"><button type="button" id="v-front" aria-pressed="true">Front</button><button type="button" id="v-back" aria-pressed="false">Back</button></div>
+<small>Previews are a guide. In-game looks can differ slightly.</small>
+</div>
+<div class="panel">
+<div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+<div class="list" id="list" role="radiogroup" aria-label="Cosmetics"></div>
+<div class="info" id="info" aria-live="polite"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<footer>
+<div class="wrap"><div class="copy"><span>© 2026 Door Client. All rights reserved.</span><span><a href="index.html">Home</a> · <a href="index.html#store">Store</a></span><span>Minecraft is a trademark of Mojang Studios.</span></div></div>
+</footer>
+
+<script>
+/* Cosmetic Lab: same cosmetics as the store (cosmetics.json), shown on a character */
+(function(){
+  'use strict';
+  var RAR=['Common','Rare','Epic','Legendary'];
+  var DEFAULTS=[
+    {id:'void-cape',name:'Void Cape',cat:'Capes',rarity:'Legendary',c1:'#f2f2f2',c2:'#2b2b33',desc:'Deep black with a bright silver edge. Quiet, until you turn around.'},
+    {id:'aurora-cape',name:'Aurora Cape',cat:'Capes',rarity:'Epic',c1:'#5b8cff',c2:'#8b6cff',desc:'A blue to violet fade, like the sky just before sunrise.'},
+    {id:'ember-cape',name:'Ember Cape',cat:'Capes',rarity:'Rare',c1:'#ffb35c',c2:'#d9381e',desc:'Warm orange that burns down to a dark red hem.'},
+    {id:'mint-cape',name:'Mint Cape',cat:'Capes',rarity:'Common',c1:'#9ff0cf',c2:'#2f9e8a',desc:'Fresh and light. A simple cape that goes with everything.'},
+    {id:'frost-wings',name:'Frost Wings',cat:'Wings',rarity:'Epic',c1:'#d6f1ff',c2:'#4aa3ff',desc:'Icy feathers that catch the light as you move.'},
+    {id:'shadow-wings',name:'Shadow Wings',cat:'Wings',rarity:'Legendary',c1:'#a78bfa',c2:'#1b1030',desc:'Wide, dark wings with a violet glow at the tips.'},
+    {id:'sunset-wings',name:'Sunset Wings',cat:'Wings',rarity:'Rare',c1:'#ffd27a',c2:'#ff6b6b',desc:'Gold fading into coral, like the last light of the day.'},
+    {id:'gold-halo',name:'Gold Halo',cat:'Halos',rarity:'Legendary',c1:'#ffe29a',c2:'#e0a82e',desc:'A thin golden ring that floats above your head.'},
+    {id:'silver-halo',name:'Silver Halo',cat:'Halos',rarity:'Rare',c1:'#ffffff',c2:'#8a8a8a',desc:'Clean silver. Matches the launcher.'},
+    {id:'top-hat',name:'Top Hat',cat:'Hats',rarity:'Common',c1:'#7a7a88',c2:'#2a2a32',desc:'A classic top hat for formal builds.'}
+  ];
+  var DOWNLOAD='https://github.com/doorclient01/Door-client-website/releases/download/v1.0/DoorClient-1.0.0.1.exe';
+  var uid=0,calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function hex(v,d){return /^#[0-9a-f]{3,8}$/i.test(v||'')?v:d}
+  function norm(it,i){
+    it=it||{};
+    return {id:String(it.id||('i'+i)).replace(/[^\w-]/g,''),name:String(it.name||'Untitled').slice(0,40),cat:String(it.cat||it.category||'Capes').slice(0,24),
+      rarity:RAR.indexOf(it.rarity)>-1?it.rarity:'Common',desc:String(it.desc||it.description||'').slice(0,240),img:String(it.img||it.image||''),
+      c1:hex(it.c1,'#ffffff'),c2:hex(it.c2,'#555555'),px:!!it.px};
+  }
+
+  var base=[],local=[],hidden=[],cat='All',sel=null,view='front';
+  try{local=(JSON.parse(lsGet('dc_store_items')||'[]')||[]).map(norm)}catch(e){}
+  try{hidden=JSON.parse(lsGet('dc_store_hidden')||'[]')||[]}catch(e){}
+  function all(){return base.concat(local).filter(function(i){return hidden.indexOf(i.id)<0})}
+  function find(id){var l=all();for(var i=0;i<l.length;i++)if(l[i].id===id)return l[i];return null}
+
+  /* small card art (same drawings as the store) */
+  function art(it){
+    if(it.img)return '<img class="'+(it.px?'px':'')+'" src="'+esc(it.img)+'" alt="" loading="lazy" decoding="async">';
+    var g='tg'+(uid++),a=it.c1,b=it.c2,f='url(#'+g+')',s='';
+    var defs='<defs><linearGradient id="'+g+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient></defs>';
+    switch(it.cat.toLowerCase()){
+      case 'wings':
+        var th=[52,32,12,-8,-28],rx=[26,28,28,26,22],w='';
+        th.forEach(function(t,i){var r=t*Math.PI/180,cx=(58-rx[i]*Math.cos(r)).toFixed(1),cy=(84-rx[i]*Math.sin(r)).toFixed(1);w+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+rx[i]+'" ry="7.5" transform="rotate('+t+' '+cx+' '+cy+')"/>'});
+        s='<g fill="'+f+'" stroke="#0007" stroke-width="1">'+w+'</g><g transform="translate(120 0) scale(-1 1)" fill="'+f+'" stroke="#0007" stroke-width="1">'+w+'</g>';break;
+      case 'hats':
+        s='<ellipse cx="60" cy="106" rx="42" ry="10" fill="'+f+'"/><rect x="34" y="46" width="52" height="60" rx="5" fill="'+f+'"/><rect x="34" y="88" width="52" height="11" fill="'+a+'" opacity=".55"/><ellipse cx="60" cy="46" rx="26" ry="6" fill="'+a+'" opacity=".35"/>';break;
+      case 'halos':
+        s='<ellipse cx="60" cy="80" rx="38" ry="13" fill="none" stroke="'+f+'" stroke-width="8" style="filter:drop-shadow(0 0 6px '+a+')"/><ellipse cx="60" cy="80" rx="38" ry="13" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>';break;
+      default:
+        s='<path d="M32 22h56l14 124q-42 12-84 0z" fill="'+f+'"/><path d="M52 26v116M68 26v116" stroke="#fff" stroke-opacity=".16" stroke-width="2"/><rect x="28" y="14" width="64" height="14" rx="5" fill="'+a+'"/>';
+    }
+    return '<svg viewBox="0 0 120 160" aria-hidden="true" focusable="false">'+defs+s+'</svg>';
+  }
+
+  /* the character: simple blocky figure, with the cosmetic drawn in the right layer for front or back */
+  function wear(it,back){
+    var g='cg'+(uid++),a=it.c1,b=it.c2,f='url(#'+g+')',defs='<defs><linearGradient id="'+g+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient></defs>';
+    var im=function(x,y,w,h,fit){return '<image href="'+esc(it.img)+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" preserveAspectRatio="'+fit+'"'+(it.px?' style="image-rendering:pixelated"':'')+'/>'};
+    var behind='',top='';
+    switch(it.cat.toLowerCase()){
+      case 'capes':
+        var cape=it.img?im(92,90,56,82,'none'):'<path d="M92 90h56l6 82q-34 10-68 0z" fill="'+f+'"/><path d="M110 94v76M130 94v76" stroke="#fff" stroke-opacity=".14" stroke-width="2"/><rect x="92" y="88" width="56" height="9" rx="3" fill="'+a+'"/>';
+        if(back)top=cape;else behind=cape;break;
+      case 'wings':
+        var wings;
+        if(it.img){wings=im(34,52,172,110,'xMidYMid meet')}
+        else{
+          var th=[62,38,14,-10,-34],rx=[38,42,42,38,32],w='';
+          th.forEach(function(t,i){var r=t*Math.PI/180,cx=(100-rx[i]*Math.cos(r)).toFixed(1),cy=(112-rx[i]*Math.sin(r)).toFixed(1);w+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+rx[i]+'" ry="9.5" transform="rotate('+t+' '+cx+' '+cy+')"/>'});
+          wings='<g fill="'+f+'" stroke="#0008" stroke-width="1">'+w+'</g><g transform="translate(240 0) scale(-1 1)" fill="'+f+'" stroke="#0008" stroke-width="1">'+w+'</g>';
+        }
+        if(back)top=wings;else behind=wings;break;
+      case 'hats':
+        top=it.img?im(86,0,68,52,'xMidYMax meet'):'<ellipse cx="120" cy="42" rx="34" ry="7" fill="'+f+'"/><rect x="98" y="8" width="44" height="36" rx="3" fill="'+f+'"/><rect x="98" y="30" width="44" height="8" fill="'+a+'" opacity=".6"/><ellipse cx="120" cy="8" rx="22" ry="4" fill="'+a+'" opacity=".4"/>';break;
+      case 'halos':
+        top=it.img?im(84,6,72,40,'xMidYMid meet'):'<ellipse cx="120" cy="26" rx="30" ry="8" fill="none" stroke="'+f+'" stroke-width="7" style="filter:drop-shadow(0 0 6px '+a+')"/><ellipse cx="120" cy="26" rx="30" ry="8" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.4"/>';break;
+      default:
+        top=it.img?im(176,96,48,48,'xMidYMid meet'):'<circle cx="200" cy="118" r="18" fill="'+f+'" style="filter:drop-shadow(0 0 8px '+a+')"/>';
+    }
+    return {defs:defs,behind:behind,top:top};
+  }
+  function drawChar(it){
+    var back=view==='back',w=it?wear(it,back):{defs:'',behind:'',top:''};
+    var figure=
+      '<ellipse cx="120" cy="246" rx="62" ry="8" fill="#000" opacity=".55"/>'+
+      '<rect x="96" y="160" width="24" height="72" fill="#3b3b3b"/><rect x="120" y="160" width="24" height="72" fill="#2f2f2f"/>'+
+      '<rect x="96" y="88" width="48" height="72" fill="#8e8e8e"/>'+
+      '<rect x="72" y="88" width="24" height="72" fill="#cfcfcf"/><rect x="144" y="88" width="24" height="72" fill="#c2c2c2"/>'+
+      (back?'<rect x="96" y="40" width="48" height="48" fill="#d9d9d9"/><rect x="96" y="40" width="48" height="40" fill="#3a3a3a"/>'
+           :'<rect x="96" y="40" width="48" height="48" fill="#d9d9d9"/><rect x="96" y="40" width="48" height="12" fill="#3a3a3a"/><rect x="106" y="62" width="10" height="7" fill="#fff"/><rect x="110" y="62" width="6" height="7" fill="#222"/><rect x="124" y="62" width="10" height="7" fill="#fff"/><rect x="124" y="62" width="6" height="7" fill="#222"/><rect x="113" y="77" width="14" height="4" fill="#8a8a8a"/>');
+    return '<defs></defs>'+w.defs+w.behind+figure+w.top;
+  }
+  var charEl=document.getElementById('char');
+  function renderChar(){charEl.innerHTML=drawChar(find(sel))}
+
+  /* ---------- lists ---------- */
+  var chipsEl=document.getElementById('chips'),listEl=document.getElementById('list'),infoEl=document.getElementById('info');
+  function render(focusSel){
+    var items=all(),cats=['All'];
+    items.forEach(function(i){if(cats.indexOf(i.cat)<0)cats.push(i.cat)});
+    if(cats.indexOf(cat)<0)cat='All';
+    var vis=items.filter(function(i){return cat==='All'||i.cat===cat});
+    if(!sel||vis.indexOf(find(sel))<0)sel=vis.length?vis[0].id:null;
+    chipsEl.innerHTML=cats.map(function(c){return '<button type="button" class="ch" data-cat="'+esc(c)+'" aria-pressed="'+(c===cat)+'">'+esc(c)+'</button>'}).join('');
+    listEl.innerHTML=vis.length?vis.map(function(it){
+      return '<button type="button" role="radio" class="it" data-id="'+it.id+'" aria-checked="'+(it.id===sel)+'" tabindex="'+(it.id===sel?0:-1)+'"><span class="it-art">'+art(it)+'</span><b>'+esc(it.name)+'</b></button>';
+    }).join(''):'<p class="empty">No cosmetics in this category yet.</p>';
+    var it=find(sel);
+    infoEl.innerHTML=it?'<div class="tags"><span class="tag">'+esc(it.cat)+'</span><span class="tag rar r-'+it.rarity.toLowerCase()+'">'+it.rarity+'</span></div><h2>'+esc(it.name)+'</h2>'+(it.desc?'<p>'+esc(it.desc)+'</p>':'')+
+      '<div class="act"><a class="pill lg" href="'+DOWNLOAD+'">Get Door Client</a><a class="pill out lg" href="index.html#store">Back to the store</a></div>':'<p class="empty">Nothing to preview yet.</p>';
+    renderChar();
+    if(focusSel){var b=listEl.querySelector('[aria-checked=true]');if(b)b.focus()}
+  }
+  function select(id,focus){
+    sel=id;
+    try{history.replaceState(null,'','#'+id)}catch(e){}
+    render(focus);
+  }
+  chipsEl.addEventListener('click',function(e){var b=e.target.closest('.ch');if(!b)return;cat=b.getAttribute('data-cat');render()});
+  listEl.addEventListener('click',function(e){var b=e.target.closest('.it');if(b)select(b.getAttribute('data-id'),false)});
+  listEl.addEventListener('keydown',function(e){
+    var k=e.key;if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].indexOf(k)<0)return;
+    var bs=[].slice.call(listEl.querySelectorAll('.it')),i=bs.indexOf(document.activeElement);if(i<0)return;
+    e.preventDefault();
+    var n=k==='Home'?0:k==='End'?bs.length-1:(i+(k==='ArrowDown'||k==='ArrowRight'?1:-1)+bs.length)%bs.length;
+    select(bs[n].getAttribute('data-id'),true);
+  });
+  function setView(v){
+    if(v===view)return;
+    view=v;
+    document.getElementById('v-front').setAttribute('aria-pressed',v==='front');
+    document.getElementById('v-back').setAttribute('aria-pressed',v==='back');
+    if(calm){renderChar();return}
+    charEl.classList.add('turn');
+    setTimeout(function(){renderChar();charEl.classList.remove('turn')},200);
+  }
+  document.getElementById('v-front').onclick=function(){setView('front')};
+  document.getElementById('v-back').onclick=function(){setView('back')};
+  window.addEventListener('hashchange',function(){var id=location.hash.slice(1);if(find(id)){cat='All';sel=id;render()}});
+
+  /* ---------- data: cosmetics.json if present, otherwise the samples ---------- */
+  function load(){
+    return new Promise(function(res){
+      var done=false;function fin(l){if(!done){done=true;res(l)}}
+      setTimeout(function(){fin(null)},2500);
+      try{fetch('cosmetics.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null}).then(function(d){var l=Array.isArray(d)?d:(d&&d.items);fin(Array.isArray(l)?l:null)}).catch(function(){fin(null)})}catch(e){fin(null)}
+    });
+  }
+  load().then(function(l){
+    base=(l||DEFAULTS).map(norm);
+    var id=location.hash.slice(1);if(id&&find(id))sel=id;
+    render();
+  });
+})();
+</script>
+</body>
+</html>
